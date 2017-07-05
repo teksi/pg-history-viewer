@@ -152,6 +152,4 @@ class ConfigDialog(QDialog, FORM_CLASS):
 
     def db_connection(self):
         return self.dbConnectionText.text()
-
-        
         

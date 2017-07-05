@@ -121,4 +121,3 @@ class Plugin():
             set_project_table_map(self.config_dlg.table_map())
             set_project_audit_table(self.config_dlg.audit_table())
             set_project_replay_function(self.config_dlg.replay_function())
-

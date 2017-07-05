@@ -17,6 +17,9 @@
 """
 # -*- coding: utf-8 -*-
 import os
+from psycopg2 import Error
+
+import error_dialog
 
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import *
@@ -208,7 +211,6 @@ class EventDialog(QtGui.QDialog, FORM_CLASS):
 
         self.populate()
 
-        self.eventTable.selectionModel().currentRowChanged.connect(self.onEventSelection)
         self.dataTable.hide()
 
         #
@@ -308,6 +310,8 @@ class EventDialog(QtGui.QDialog, FORM_CLASS):
         cur.execute(q)
         self.eventModel = EventModel(cur)
         self.eventTable.setModel(self.eventModel)
+        
+        self.eventTable.selectionModel().currentRowChanged.connect(self.onEventSelection)
 
         self.eventTable.horizontalHeader().setResizeMode(QHeaderView.Interactive)
 
@@ -409,9 +413,17 @@ class EventDialog(QtGui.QDialog, FORM_CLASS):
         event_id = self.eventModel.data(self.eventModel.index(i, 0), Qt.UserRole)
 
         cur = self.conn.cursor()
-        cur.execute("SELECT {}({})".format(self.replay_function, event_id))
+        
+        try:
+            cur.execute("SELECT {}({})".format(self.replay_function, event_id))
+        except Error as e:
+            self.error_dlg = error_dialog.ErrorDialog(self)
+            self.error_dlg.setErrorText(e.diag.severity + ": " + e.diag.message_primary)
+            self.error_dlg.setDetailsText(e.diag.message_detail)
+            self.error_dlg.setContextText(e.diag.context)
+            self.error_dlg.show()
+        
         self.conn.commit()
 
         # refresh table
         self.populate()
-        
