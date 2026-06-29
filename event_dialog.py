@@ -22,10 +22,10 @@ from psycopg2 import Error
 
 from .error_dialog import ErrorDialog
 
-from PyQt5 import QtGui, uic
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import (QDialog,
+from qgis.PyQt import QtGui, uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import (QDialog,
                              QVBoxLayout,
                              QHBoxLayout,
                              QLabel,
@@ -84,9 +84,9 @@ class EventModel(QAbstractTableModel):
         self.page_size = 100
 
     def flags(self, idx):
-        return Qt.NoItemFlags | Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        return Qt.ItemFlag.NoItemFlags | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled
 
-    def data(self, idx, role=Qt.DisplayRole):
+    def data(self, idx, role=Qt.ItemDataRole.DisplayRole):
         # print idx.column(), role
         if idx.row() >= len(self.__data):
             rc = len(self.__data)
@@ -98,28 +98,28 @@ class EventModel(QAbstractTableModel):
         row = self.__data[idx.row()]
         event_id, tstamp, table_name, action, application, user, row_data, changed_fields = row
         if idx.column() == 0:
-            if role == Qt.DisplayRole:
+            if role == Qt.ItemDataRole.DisplayRole:
                 return tstamp.strftime("%x - %X")
-            elif role == Qt.UserRole:
+            elif role == Qt.ItemDataRole.UserRole:
                 return event_id
         elif idx.column() == 1:
-            if role == Qt.DisplayRole:
+            if role == Qt.ItemDataRole.DisplayRole:
                 return table_name
         elif idx.column() == 2:
-            if role == Qt.DisplayRole:
+            if role == Qt.ItemDataRole.DisplayRole:
                 if action == 'I':
                     return "Insertion"
                 elif action == 'D':
                     return "Delete"
                 elif action == 'U':
                     return "Update"
-            elif role == Qt.UserRole:
+            elif role == Qt.ItemDataRole.UserRole:
                 return action
         elif idx.column() == 3:
-            if role == Qt.DisplayRole:
+            if role == Qt.ItemDataRole.DisplayRole:
                 return application
         elif idx.column() == 4:
-            if role == Qt.DisplayRole:
+            if role == Qt.ItemDataRole.DisplayRole:
                 return user
         return None
 
@@ -130,7 +130,7 @@ class EventModel(QAbstractTableModel):
         return parse_hstore(self.__data[row][7])
 
     def headerData(self, section, orientation, role):
-        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+        if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
             return ("Date", "Table", "Action", "Application", "User")[section]
         return QAbstractTableModel.headerData(self, section, orientation, role)
 
@@ -306,7 +306,7 @@ class EventDialog(QDialog, FORM_CLASS):
         self.hbox.addWidget(self.oldGeometryLabel)
         self.hbox.addWidget(self.newGeometryLabel)
         self.hbox.addItem(QSpacerItem(
-            20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+            20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
 
         self.vbox.addLayout(self.hbox)
         self.vbox.addWidget(self.inner_canvas)
@@ -370,11 +370,11 @@ class EventDialog(QDialog, FORM_CLASS):
         if self.afterChck.isChecked():
             dt = self.afterDt.dateTime()
             wheres.append("action_tstamp_clk > '{}'".format(
-                dt.toString(Qt.ISODate)))
+                dt.toString(Qt.DateFormat.ISODate)))
         if self.beforeChck.isChecked():
             dt = self.beforeDt.dateTime()
             wheres.append("action_tstamp_clk < '{}'".format(
-                dt.toString(Qt.ISODate)))
+                dt.toString(Qt.DateFormat.ISODate)))
 
         # base query
         q = "SELECT event_id, action_tstamp_clk, schema_name || '.' || table_name, action, application_name, session_user_name, row_data, changed_fields FROM {} l".format(
@@ -399,7 +399,7 @@ class EventDialog(QDialog, FORM_CLASS):
 
         self.eventTable.selectionModel().currentRowChanged.connect(self.onEventSelection)
 
-        self.eventTable.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        self.eventTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
 
     def updateReplayButton(self):
         self.replayButton.setEnabled(False)
@@ -420,7 +420,7 @@ class EventDialog(QDialog, FORM_CLASS):
             return
         i = current_idx.row()
         # action from current selection
-        action = self.eventModel.data(self.eventModel.index(i, 2), Qt.UserRole)
+        action = self.eventModel.data(self.eventModel.index(i, 2), Qt.ItemDataRole.UserRole)
 
         self.updateReplayButton()
 
@@ -513,7 +513,7 @@ class EventDialog(QDialog, FORM_CLASS):
             return
         # event_id from current selection
         event_id = self.eventModel.data(
-            self.eventModel.index(i, 0), Qt.UserRole)
+            self.eventModel.index(i, 0), Qt.ItemDataRole.UserRole)
 
         error = ""
 
@@ -537,7 +537,7 @@ class EventDialog(QDialog, FORM_CLASS):
                 "An error has occurred during database access.")
             self.error_dlg.setContextText(error)
             self.error_dlg.setDetailsText("")
-            self.error_dlg.exec_()
+            self.error_dlg.exec()
 
         self.connection_wrapper_write.commit()
 
@@ -626,9 +626,9 @@ class EventDialog(QDialog, FORM_CLASS):
             if getattr(layer, "beforeEditingStarted", None) != None and getattr(layer, "editingStopped", None) != None:
                 try:
                     layer.editingStarted.connect(
-                        self.layerEditionModeChanged, Qt.UniqueConnection)
+                        self.layerEditionModeChanged, Qt.ConnectionType.UniqueConnection)
                     layer.editingStopped.connect(
-                        self.layerEditionModeChanged, Qt.UniqueConnection)
+                        self.layerEditionModeChanged, Qt.ConnectionType.UniqueConnection)
                 except:
                     pass
 

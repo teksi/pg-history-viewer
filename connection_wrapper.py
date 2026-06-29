@@ -228,7 +228,7 @@ class ConnectionWrapper():
             self.credDlg.setDomainText(db_connection)
             self.credDlg.setPasswordText("")
 
-            self.credDlg.exec_()
+            self.credDlg.exec()
 
             # User has canceled: abort.
             if self.credDlg.hasUserCanceled():

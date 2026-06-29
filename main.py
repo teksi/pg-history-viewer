@@ -21,9 +21,9 @@ import os
 # import from __init__
 from . import name as plugin_name
 
-from PyQt5.QtCore import QSettings
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QMessageBox
+from qgis.PyQt.QtCore import QSettings
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QMessageBox
 
 from qgis.core import QgsProject
 
@@ -180,7 +180,7 @@ class Plugin():
         replay_function = project_replay_function()
         self.config_dlg = ConfigDialog(self.iface.mainWindow(
         ), db_connection, audit_table, table_map, replay_function)
-        r = self.config_dlg.exec_()
+        r = self.config_dlg.exec()
 
         if r == 1:
             # save to the project
