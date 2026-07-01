@@ -18,10 +18,10 @@
 # -*- coding: utf-8 -*-
 import os
 
-from PyQt5 import uic
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import QDialog
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import QDialog
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'credentials_dialog.ui'))
@@ -76,7 +76,7 @@ class CredentialsDialog(QDialog, FORM_CLASS):
         self.userHasCancel = True
 
     def keyPressEvent(self, event):
-        if not event.key() == Qt.Key_Escape:
+        if not event.key() == Qt.Key.Key_Escape:
             super(QDialog, self).keyPressEvent(event)
 
         else:

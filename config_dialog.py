@@ -18,10 +18,10 @@
 # -*- coding: utf-8 -*-
 import os
 
-from PyQt5 import uic
-from PyQt5.QtCore import QSettings, QPoint
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDialog, QMessageBox, QMenu
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import QSettings, QPoint
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QDialog, QMessageBox, QMenu
 
 from qgis.core import QgsProject, QgsLayerTreeModel, QgsDataSourceUri
 from qgis.gui import QgsLayerTreeView
@@ -76,15 +76,15 @@ class ConfigDialog(QDialog, FORM_CLASS):
     def sslModeToString(self, mode):
         sslMode = QgsDataSourceUri.decodeSslMode(mode)
 
-        if sslMode == int(QgsDataSourceUri.SslDisable):
+        if sslMode == int(QgsDataSourceUri.SslMode.SslDisable):
             return "disable"
-        if sslMode == int(QgsDataSourceUri.SslAllow):
+        if sslMode == int(QgsDataSourceUri.SslMode.SslAllow):
             return "allow"
-        if sslMode == int(QgsDataSourceUri.SslRequire):
+        if sslMode == int(QgsDataSourceUri.SslMode.SslRequire):
             return "require"
-        if sslMode == int(QgsDataSourceUri.SslVerifyCa):
+        if sslMode == int(QgsDataSourceUri.SslMode.SslVerifyCa):
             return "verify-ca"
-        if sslMode == int(QgsDataSourceUri.SslVerifyFull):
+        if sslMode == int(QgsDataSourceUri.SslMode.SslVerifyFull):
             return "verify-full"
 
         # Default empty value: SSLprefer.
@@ -124,7 +124,7 @@ class ConfigDialog(QDialog, FORM_CLASS):
             self.reloadBtn.click()
 
         menu.triggered.connect(onMenu)
-        menu.exec_(self.dbConnectionBtn.mapToGlobal(QPoint(0, 0)))
+        menu.exec(self.dbConnectionBtn.mapToGlobal(QPoint(0, 0)))
 
     def onDatabaseChanged(self):
         dbparams = self.dbConnectionText.text()
