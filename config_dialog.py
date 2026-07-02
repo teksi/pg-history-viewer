@@ -97,7 +97,7 @@ class ConfigDialog(QDialog, FORM_CLASS):
         children = s.childGroups()
         connections = {}
         map = {"dbname": "database", "host": "host", "port": "port", "service": "service",
-               "password": "password", "user": "username", "sslmode": "sslmode"}
+               "password": "password", "user": "username", "sslmode": "sslmode"} # pragma: allowlist secret
         for g in children:
             s.beginGroup(g)
             cstring = ""

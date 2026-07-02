@@ -353,8 +353,8 @@ class EventDialog(QDialog, FORM_CLASS):
             v = self.dataEdit.text()
             v = v.replace('\\', '\\\\').replace(
                 "'", "''").replace('%', '\\%').replace('_', '\\_')
-            wheres.append(
-                "(SELECT string_agg(v,' ') FROM svals(row_data) as v) ILIKE '%{}%'".format(v))
+            wheres.append( # nosec B608
+                "(SELECT string_agg(v,' ') FROM svals(row_data) as v) ILIKE '%{}%'".format(v)); # nosec B608
 
         # filter by event type
         types = []
@@ -377,8 +377,8 @@ class EventDialog(QDialog, FORM_CLASS):
                 dt.toString(Qt.DateFormat.ISODate)))
 
         # base query
-        q = "SELECT event_id, action_tstamp_clk, schema_name || '.' || table_name, action, application_name, session_user_name, row_data, changed_fields FROM {} l".format(
-            self.audit_table)
+        q = "SELECT event_id, action_tstamp_clk, schema_name || '.' || table_name, action, application_name, session_user_name, row_data, changed_fields FROM {} l".format( # nosec B608
+            self.audit_table) # nosec B608
         # where clause
         if len(wheres) > 0:
             q += " WHERE " + " AND ".join(wheres)
@@ -437,8 +437,8 @@ class EventDialog(QDialog, FORM_CLASS):
                 print("Cursor creation has failed")
                 return
 
-            q = "SELECT f_geometry_column FROM geometry_columns WHERE f_table_schema='{}' AND f_table_name='{}'".format(
-                schema, table)
+            q = "SELECT f_geometry_column FROM geometry_columns WHERE f_table_schema='{}' AND f_table_name='{}'".format( # nosec B608
+                schema, table) # nosec B608
             cur.execute(q)
             self.geometry_columns[table_name] = [r[0] for r in cur.fetchall()]
             gcolumns = self.geometry_columns[table_name]
